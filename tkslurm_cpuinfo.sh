@@ -1,7 +1,10 @@
 #!/bin/zsh
 
-# free swap memory
-a=$(free -m|grep Swap|sed "s/  */T/g"|cut -f3 -d'T')
+# query free swap memory (relative)
+a1=$(free -m|grep Swap|sed "s/  */T/g"|cut -f2 -d'T')
+a2=$(free -m|grep Swap|sed "s/  */T/g"|cut -f3 -d'T')
+
+a=$((100* $a2 / $a1 ))
 
 # cpu stats
 b=$(cat /proc/stat|grep "cpu "|cut -f3- -d' ')

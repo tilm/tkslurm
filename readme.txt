@@ -9,20 +9,23 @@ export TKSLURM_NRJOBS=4
 export TKSLURM_DELAY=2
 export TKSLURM_LOGDIR=/tmp
 
-The TKSLURM_NRJOBS will change during evaluation.
+The TKSLURM_NRJOBS will change during evaluation
+according to tkslurm_adjust_nrjobs.sh
 
 Job definition:
 Each row stands for a job, all files must provide the same number of rows.
 Files can be changed all the time.
-${TKSLURM_LOGDIR}/tkslurm_cqueue - commands to evaluate
-${TKSLURM_LOGDIR}/tkslurm_rqueue - commands which return true if the job is running
-${TKSLURM_LOGDIR}/tkslurm_kqueue - commands which kill the job
-${TKSLURM_LOGDIR}/tkslurm_fqueue - commands which return true if the job has been finished with success
-${TKSLURM_LOGDIR}/tkslurm_equeue - commands which return true if the job has been finished with an error
+${TKSLURM_LOGDIR}/tkslurm_cqueue - (C)ommands to evaluate
+${TKSLURM_LOGDIR}/tkslurm_rqueue - commands which return true if the job is (r)unning
+${TKSLURM_LOGDIR}/tkslurm_kqueue - commands which (k)ill the job
+${TKSLURM_LOGDIR}/tkslurm_fqueue - commands which return true if the job has been (f)inished with success
+${TKSLURM_LOGDIR}/tkslurm_equeue - commands which return true if the job has been finished with an (e)rror
 
 Advantage wrt slurm:
 No knowledge of memory/cpu consumption necessary.
-Online change of queue and nr of parallel jobs possible.
+No knowledge of hardware ressources necessary.
+Online change of queue and nr of parallel jobs according
+to pct value measures possible.
 The command for killing and restarting the job is
 user defined.
 

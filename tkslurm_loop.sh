@@ -15,6 +15,9 @@ then
   return
 fi
 
+echo "export TKSLURM_NRJOBS=${TKSLURM_NRJOBS};export TKSLURM_DELAY=${TKSLURM_DELAY};">${TKSLURM_LOGDIR}/tkslurm_init.sh
+
+
 while true
 do
   tkslurm_update_queue.sh
@@ -43,10 +46,9 @@ do
       eval "${a1}"
     done;
   fi
-  sleep ${TKSLURM_DELAY}
 
   #writes a new tkslurm_init.sh file
-  tkslurm_adjust_nrjobs.sh $nr_notstarted
+  tkslurm_adjust_nrjobs.sh $nr_notstarted ${TKSLURM_DELAY}
   # read the new variables
   . ${TKSLURM_LOGDIR}/tkslurm_init.sh
 done

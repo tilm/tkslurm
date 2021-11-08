@@ -2,7 +2,8 @@
 You have some commands to evaluate and
 dont know how much ressources it costs. 
 The loop shell script starts and stops
-as many processes as good for the machine.
+the proper number of processes according
+to the availablre ressources.
 
 Necessary initial environment:
 export TKSLURM_NRJOBS=4
@@ -24,6 +25,8 @@ ${TKSLURM_LOGDIR}/tkslurm_equeue - commands which return true if the job has bee
 Advantage wrt slurm:
 No knowledge of memory/cpu consumption necessary.
 No knowledge of hardware ressources necessary.
+Jobs are startet one by one with a user defined delay
+in order to smooth io requests.
 Online change of queue and nr of parallel jobs according
 to pct value measures possible.
 The command for killing and restarting the job is
@@ -41,6 +44,7 @@ truncate -s0 /tmp/tkslurm_rqueue
 truncate -s0 /tmp/tkslurm_kqueue
 truncate -s0 /tmp/tkslurm_fqueue
 truncate -s0 /tmp/tkslurm_equeue
+rm /tmp/joblog*
 for i in 16 17 18 19 20
 do;
 b1="setsid bash -c \"(sleep $i&&echo ready||echo error)>/tmp/joblog${i}\"&|"
@@ -58,4 +62,22 @@ done
 Start the scheduler:
 tkslurm_loop.sh
 
+The output is:
+2021-11-03T20:26:02: starting setsid bash -c "(sleep 16&&echo ready||echo error)>/tmp/joblog16"&|
+2021-11-03T20:26:06: running:1; finished:0; error:0; notstarted:4; jobtarget:4
+2021-11-03T20:26:06: starting setsid bash -c "(sleep 17&&echo ready||echo error)>/tmp/joblog17"&|
+2021-11-03T20:26:09: running:2; finished:0; error:0; notstarted:3; jobtarget:4
+2021-11-03T20:26:09: starting setsid bash -c "(sleep 18&&echo ready||echo error)>/tmp/joblog18"&|
+2021-11-03T20:26:12: running:3; finished:0; error:0; notstarted:2; jobtarget:4
+2021-11-03T20:26:12: starting setsid bash -c "(sleep 19&&echo ready||echo error)>/tmp/joblog19"&|
+2021-11-03T20:26:15: running:4; finished:0; error:0; notstarted:1; jobtarget:4
+2021-11-03T20:26:19: running:3; finished:1; error:0; notstarted:1; jobtarget:4
+2021-11-03T20:26:19: starting setsid bash -c "(sleep 20&&echo ready||echo error)>/tmp/joblog20"&|
+2021-11-03T20:26:22: running:4; finished:1; error:0; notstarted:0; jobtarget:4
+2021-11-03T20:26:25: running:3; finished:2; error:0; notstarted:0; jobtarget:4
+2021-11-03T20:26:28: running:2; finished:3; error:0; notstarted:0; jobtarget:4
+2021-11-03T20:26:32: running:1; finished:4; error:0; notstarted:0; jobtarget:4
+2021-11-03T20:26:35: running:1; finished:4; error:0; notstarted:0; jobtarget:4
+2021-11-03T20:26:38: running:1; finished:4; error:0; notstarted:0; jobtarget:4
+2021-11-03T20:26:41: running:0; finished:5; error:0; notstarted:0; jobtarget:4
 

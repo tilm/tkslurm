@@ -63,21 +63,37 @@ Start the scheduler:
 tkslurm_loop.sh
 
 The output is:
-2021-11-03T20:26:02: starting setsid bash -c "(sleep 16&&echo ready||echo error)>/tmp/joblog16"&|
-2021-11-03T20:26:06: running:1; finished:0; error:0; notstarted:4; jobtarget:4
-2021-11-03T20:26:06: starting setsid bash -c "(sleep 17&&echo ready||echo error)>/tmp/joblog17"&|
-2021-11-03T20:26:09: running:2; finished:0; error:0; notstarted:3; jobtarget:4
-2021-11-03T20:26:09: starting setsid bash -c "(sleep 18&&echo ready||echo error)>/tmp/joblog18"&|
-2021-11-03T20:26:12: running:3; finished:0; error:0; notstarted:2; jobtarget:4
-2021-11-03T20:26:12: starting setsid bash -c "(sleep 19&&echo ready||echo error)>/tmp/joblog19"&|
-2021-11-03T20:26:15: running:4; finished:0; error:0; notstarted:1; jobtarget:4
-2021-11-03T20:26:19: running:3; finished:1; error:0; notstarted:1; jobtarget:4
-2021-11-03T20:26:19: starting setsid bash -c "(sleep 20&&echo ready||echo error)>/tmp/joblog20"&|
-2021-11-03T20:26:22: running:4; finished:1; error:0; notstarted:0; jobtarget:4
-2021-11-03T20:26:25: running:3; finished:2; error:0; notstarted:0; jobtarget:4
-2021-11-03T20:26:28: running:2; finished:3; error:0; notstarted:0; jobtarget:4
-2021-11-03T20:26:32: running:1; finished:4; error:0; notstarted:0; jobtarget:4
-2021-11-03T20:26:35: running:1; finished:4; error:0; notstarted:0; jobtarget:4
-2021-11-03T20:26:38: running:1; finished:4; error:0; notstarted:0; jobtarget:4
-2021-11-03T20:26:41: running:0; finished:5; error:0; notstarted:0; jobtarget:4
+2021-11-09T15:36:55: starting setsid bash -c "(sleep 16&&echo ready||echo error)>/tmp/joblog16"&|
+2021-11-09T15:37:08: swap:14; waload: 0; nice: 95
+2021-11-09T15:37:08: running:1; finished:0; error:0; notstarted:4; jobtarget:4
+2021-11-09T15:37:08: starting setsid bash -c "(sleep 17&&echo ready||echo error)>/tmp/joblog17"&|
+2021-11-09T15:37:10: swap:14; waload: 0; nice: 92
+2021-11-09T15:37:10: running:2; finished:0; error:0; notstarted:3; jobtarget:4
+2021-11-09T15:37:10: starting setsid bash -c "(sleep 18&&echo ready||echo error)>/tmp/joblog18"&|
+2021-11-09T15:37:12: swap:14; waload: 0; nice: 95
+2021-11-09T15:37:13: running:2; finished:1; error:0; notstarted:2; jobtarget:4
+2021-11-09T15:37:13: starting setsid bash -c "(sleep 19&&echo ready||echo error)>/tmp/joblog19"&|
+2021-11-09T15:37:15: swap:14; waload: 0; nice: 94
+2021-11-09T15:37:15: running:3; finished:1; error:0; notstarted:1; jobtarget:4
+2021-11-09T15:37:15: starting setsid bash -c "(sleep 20&&echo ready||echo error)>/tmp/joblog20"&|
+2021-11-09T15:37:17: swap:14; waload: 0; nice: 92
+2021-11-09T15:37:17: running:4; finished:1; error:0; notstarted:0; jobtarget:4
+2021-11-09T15:37:19: swap:14; waload: 0; nice: 93
+2021-11-09T15:37:19: running:4; finished:1; error:0; notstarted:0; jobtarget:4
+2021-11-09T15:37:21: swap:14; waload: 0; nice: 93
+2021-11-09T15:37:21: running:4; finished:1; error:0; notstarted:0; jobtarget:4
+2021-11-09T15:37:23: swap:14; waload: 0; nice: 94
+2021-11-09T15:37:23: running:4; finished:1; error:0; notstarted:0; jobtarget:4
+2021-11-09T15:37:25: swap:14; waload: 0; nice: 92
+2021-11-09T15:37:26: running:3; finished:2; error:0; notstarted:0; jobtarget:4
+2021-11-09T15:37:28: swap:14; waload: 0; nice: 93
+2021-11-09T15:37:28: running:3; finished:2; error:0; notstarted:0; jobtarget:4
+2021-11-09T15:37:30: swap:14; waload: 0; nice: 93
+2021-11-09T15:37:30: running:2; finished:3; error:0; notstarted:0; jobtarget:4
+2021-11-09T15:37:32: swap:14; waload: 0; nice: 93
+2021-11-09T15:37:32: running:1; finished:4; error:0; notstarted:0; jobtarget:4
+2021-11-09T15:37:34: swap:14; waload: 0; nice: 93
+2021-11-09T15:37:34: running:1; finished:4; error:0; notstarted:0; jobtarget:4
+2021-11-09T15:37:36: swap:14; waload: 0; nice: 94
+2021-11-09T15:37:36: running:0; finished:5; error:0; notstarted:0; jobtarget:4
 

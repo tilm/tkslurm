@@ -20,7 +20,7 @@ a3=$(echo $a|cut -f1 -d ' ')
 mc=$(cat /proc/cpuinfo|grep processor|wc -l)
 
 d=$(date "+%FT%T")
-echo "${d}: swap:$a1; waload: $a2; nice: $a3"
+echo "${d}: swap:$a1; waload: $a2; idle: $a3"
 
 if [ $a1 -gt 60 -a ${TKSLURM_NRJOBS} -gt 0 ]
 then

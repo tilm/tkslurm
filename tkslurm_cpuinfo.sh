@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-
+# print machine state
 delay=$1
 
 a1=$(sar -S -u ALL ${delay} 1|grep "Average"|grep "\."|sed "s/  */ /g"|cut -f4,6,12 -d' ')

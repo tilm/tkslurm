@@ -15,13 +15,16 @@ then
   return
 fi
 
+# write state file tkslurm_init.sh
 echo "export TKSLURM_NRJOBS=${TKSLURM_NRJOBS};export TKSLURM_DELAY=${TKSLURM_DELAY};">${TKSLURM_LOGDIR}/tkslurm_init.sh
 
 
 while true
 do
   tkslurm_update_queue.sh
-
+  # process queue files
+  # requires TKSLURM_LOGDIR
+ 
   nr_running=$(cat ${TKSLURM_LOGDIR}/tkslurm_crunning|wc -l )
   nr_finished=$(cat ${TKSLURM_LOGDIR}/tkslurm_cfinished|wc -l )
   nr_error=$(cat ${TKSLURM_LOGDIR}/tkslurm_cerror|wc -l )
@@ -47,8 +50,9 @@ do
     done;
   fi
 
-  #writes a new tkslurm_init.sh file
-  tkslurm_adjust_nrjobs.sh $nr_notstarted ${TKSLURM_DELAY}
+  #read/change/write tkslurm_init.sh file
+  tkslurm_adjust_nrjobs.sh $nr_notistarted ${TKSLURM_DELAY}
+
   # read the new variables
   . ${TKSLURM_LOGDIR}/tkslurm_init.sh
 done

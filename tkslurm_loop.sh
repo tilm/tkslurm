@@ -29,30 +29,26 @@ do
   nr_finished=$(cat ${TKSLURM_LOGDIR}/tkslurm_cfinished|wc -l )
   nr_error=$(cat ${TKSLURM_LOGDIR}/tkslurm_cerror|wc -l )
   nr_notstarted=$(cat ${TKSLURM_LOGDIR}/tkslurm_cnotstarted|wc -l )
+  nr_unfinished=$$( ${nr_running} + ${nr_notstarted})
   
   d=$(date "+%FT%T")
   echo "${d}: running:$nr_running; finished:$nr_finished; error:$nr_error; notstarted:$nr_notstarted; jobtarget:${TKSLURM_NRJOBS}"
 
-  if [ ${nr_running} -lt ${TKSLURM_NRJOBS}  -a $nr_notstarted -gt 0 ]
+  if [ ${nr_running} -lt ${TKSLURM_NRJOBS} -a $nr_notstarted -gt 0 ]
   then
     # start only a single job in order to watch ressources
     a1=$(head -n1 ${TKSLURM_LOGDIR}/tkslurm_cnotstarted)
     echo "${d}: starting ${a1}"
     eval ${a1}
-  elif [ ${nr_running} -gt ${TKSLURM_NRJOBS} ]
+  elif [ ${nr_running} -gt ${TKSLURM_NRJOBS} -a $nr_running -gt 0 ]
   then
     # stop
-    j=$(( ${nr_running} - ${TKSLURM_NRJOBS} ))
-    tac ${TKSLURM_LOGDIR}/tkslurm_krunning|head -n${j}|while read a1
-    do
-      echo "${d}: requeueing ${a1}"
-      eval "${a1}"
-    done;
+    a1=$(head -n1 ${TKSLURM_LOGDIR}/tkslurm_krunning)
+    echo "${d}: requeueing ${a1}"
+    eval ${a1}
   fi
-
   #read/change/write tkslurm_init.sh file
-  tkslurm_adjust_nrjobs.sh $nr_notistarted ${TKSLURM_DELAY}
-
+  tkslurm_adjust_nrjobs.sh ${nr_unfinished} ${TKSLURM_DELAY}
   # read the new variables
   . ${TKSLURM_LOGDIR}/tkslurm_init.sh
 done

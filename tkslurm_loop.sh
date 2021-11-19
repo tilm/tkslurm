@@ -29,7 +29,7 @@ do
   nr_finished=$(cat ${TKSLURM_LOGDIR}/tkslurm_cfinished|wc -l )
   nr_error=$(cat ${TKSLURM_LOGDIR}/tkslurm_cerror|wc -l )
   nr_notstarted=$(cat ${TKSLURM_LOGDIR}/tkslurm_cnotstarted|wc -l )
-  nr_unfinished=$$( ${nr_running} + ${nr_notstarted})
+  nr_unfinished=$(( ${nr_running} + ${nr_notstarted}))
   
   d=$(date "+%FT%T")
   echo "${d}: running:$nr_running; finished:$nr_finished; error:$nr_error; notstarted:$nr_notstarted; jobtarget:${TKSLURM_NRJOBS}"

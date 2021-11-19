@@ -48,7 +48,7 @@ and prevent a requeue.
 Limitations:
 You are responsible that the commands work,
 if a job terminates with an indefinite state,
-it will be restartet again and again.
+it will be restarted again and again.
 There is a single queue, no priority queue,
 user has to reorder queue files if necessary.
 No explicit support for running on a cluster,

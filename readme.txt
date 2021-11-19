@@ -45,15 +45,15 @@ it normally gets restarted. Depending on user defined
 command in tkslurm_equeue, it is possible to detect any kind of error
 and prevent a requeue.
 
-
 Limitations:
 You are responsible that the commands work,
 if a job terminates with an indefinite state,
 it will be restartet again and again.
-User has to synchronize workload files if
-jobs are scheduled on more than one machine.
 There is a single queue, no priority queue,
 user has to reorder queue files if necessary.
+No explicit support for running on a cluster,
+but it is possible with logfiles in nfs for fqueue and equeue,
+and ssh pgrep calls in rqueue and kqueue.
 
 example for job file creation with the base command "sleep":
 truncate -s0 /tmp/tkslurm_cqueue

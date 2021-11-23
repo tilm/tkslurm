@@ -24,15 +24,15 @@ d=$(date "+%FT%T")
 echo "${d}: swap:$a1; waload: $a2; idle: $a3; unfinishedjobs: ${nr_unfinished}; nrcpus: ${mc}"
 
 . ${TKSLURM_LOGDIR}/tkslurm_init.sh
-if [ $a1 -gt 60 -a ${TKSLURM_NRJOBS} -gt 0 ]
+if [ $a1 -gt 60 -a ${TKSLURM_NRJOBS} -gt 1 ]
 then
   TKSLURM_NRJOBS=$((${TKSLURM_NRJOBS} - 1))
   echo "${d}: reduce due to swap > 60pct"
-elif [ $a2 -gt 7 -a ${TKSLURM_NRJOBS} -gt 0 ]
+elif [ $a2 -gt 7 -a ${TKSLURM_NRJOBS} -gt 1 ]
 then
   TKSLURM_NRJOBS=$((${TKSLURM_NRJOBS} - 1))
   echo "${d}: reduce due to io >7 pct"
-elif [ $a3 -lt 5 -a ${TKSLURM_NRJOBS} -gt 0 ]
+elif [ $a3 -lt 5 -a ${TKSLURM_NRJOBS} -gt 1 ]
 then
   TKSLURM_NRJOBS=$((${TKSLURM_NRJOBS} - 1))
   echo "${d}: reduce due to idle < 5pct"

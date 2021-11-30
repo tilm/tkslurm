@@ -14,6 +14,12 @@ then
   echo "export TKSLURM_DELAY=300 is missing"
   return
 fi
+if [ ! ${TKSLURM_MAXJOBS} ]
+then
+  echo "export TKSLURM_MAXJOBS=16 is missing"
+  return
+fi
+
 
 # write state file tkslurm_init.sh
 echo "export TKSLURM_NRJOBS=${TKSLURM_NRJOBS};export TKSLURM_DELAY=${TKSLURM_DELAY};">${TKSLURM_LOGDIR}/tkslurm_init.sh
@@ -48,7 +54,7 @@ do
     eval ${a1}
   fi
   #read/change/write tkslurm_init.sh file
-  tkslurm_adjust_nrjobs.sh ${nr_unfinished} ${TKSLURM_DELAY}
+  tkslurm_adjust_nrjobs.sh ${nr_unfinished} ${TKSLURM_DELAY} ${TKSLURM_MAXJOBS}
   # read the new variables
   . ${TKSLURM_LOGDIR}/tkslurm_init.sh
 done

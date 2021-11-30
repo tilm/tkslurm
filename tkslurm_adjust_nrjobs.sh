@@ -2,6 +2,7 @@
 
 nr_unfinished=$1
 delay=$2
+maxjobs=$3
 
 # reads the state file tkslurm_init
 # changes the state
@@ -24,19 +25,19 @@ d=$(date "+%FT%T")
 echo "${d}: swap:$a1; waload: $a2; idle: $a3; unfinishedjobs: ${nr_unfinished}; nrcpus: ${mc}"
 
 . ${TKSLURM_LOGDIR}/tkslurm_init.sh
-if [ $a1 -gt 60 -a ${TKSLURM_NRJOBS} -gt 1 ]
+if [ $a1 -gt 90 -a ${TKSLURM_NRJOBS} -gt 1 ]
 then
   TKSLURM_NRJOBS=$((${TKSLURM_NRJOBS} - 1))
-  echo "${d}: reduce due to swap > 60pct"
-elif [ $a2 -gt 7 -a ${TKSLURM_NRJOBS} -gt 1 ]
+  echo "${d}: reduce due to swap > 90pct"
+elif [ $a2 -gt 5 -a ${TKSLURM_NRJOBS} -gt 1 ]
 then
   TKSLURM_NRJOBS=$((${TKSLURM_NRJOBS} - 1))
-  echo "${d}: reduce due to io >7 pct"
+  echo "${d}: reduce due to io >5 pct"
 elif [ $a3 -lt 5 -a ${TKSLURM_NRJOBS} -gt 1 ]
 then
   TKSLURM_NRJOBS=$((${TKSLURM_NRJOBS} - 1))
   echo "${d}: reduce due to idle < 5pct"
-elif [ $a3 -gt 30 -a $a1 -lt 50 -a $a2 -le 0 -a ${TKSLURM_NRJOBS} -lt ${nr_unfinished} -a ${TKSLURM_NRJOBS} -lt $mc ]
+elif [ $a3 -gt 30 -a $a1 -lt 50 -a $a2 -le 0 -a ${TKSLURM_NRJOBS} -lt ${nr_unfinished} -a ${TKSLURM_NRJOBS} -lt $mc -a ${TKSLURM_NRJOBS} -lt ${maxjobs} ]
 then
   TKSLURM_NRJOBS=$((${TKSLURM_NRJOBS} + 1))
   echo "${d}: increase due to idle>30pct and swap<50pct and io<=0pct"

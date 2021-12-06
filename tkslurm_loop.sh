@@ -49,7 +49,7 @@ do
   elif [ ${nr_running} -gt ${TKSLURM_NRJOBS} -a $nr_running -gt 0 ]
   then
     # stop
-    a1=$(head -n1 ${TKSLURM_LOGDIR}/tkslurm_krunning)
+    a1=$(tail -n1 ${TKSLURM_LOGDIR}/tkslurm_krunning)
     echo "${d}: requeueing ${a1}"
     eval ${a1}
   fi

@@ -4,11 +4,6 @@ if [ -z ${TKSLURM_LOGDIR} ]
 then
   echo "export TKSLURM_LOGDIR=foo is missing"
 fi
-if [ ! ${TKSLURM_NRJOBS} ]
-then
-  echo "export TKSLURM_NRJOBS=4 is missing"
-  return
-fi
 if [ ! ${TKSLURM_DELAY} ]
 then
   echo "export TKSLURM_DELAY=300 is missing"
@@ -27,35 +22,45 @@ echo "export TKSLURM_NRJOBS=${TKSLURM_NRJOBS};export TKSLURM_DELAY=${TKSLURM_DEL
 
 while true
 do
-  tkslurm_update_queue.sh
+  tkslurm_update_queue1.sh
   # process queue files
   # requires TKSLURM_LOGDIR
  
+  nr_runningstopped=$(cat ${TKSLURM_LOGDIR}/tkslurm_crunningstopped|wc -l )
   nr_running=$(cat ${TKSLURM_LOGDIR}/tkslurm_crunning|wc -l )
+  nr_stopped=$(cat ${TKSLURM_LOGDIR}/tkslurm_cstopped|wc -l )
   nr_finished=$(cat ${TKSLURM_LOGDIR}/tkslurm_cfinished|wc -l )
   nr_error=$(cat ${TKSLURM_LOGDIR}/tkslurm_cerror|wc -l )
   nr_notstarted=$(cat ${TKSLURM_LOGDIR}/tkslurm_cnotstarted|wc -l )
   nr_unfinished=$(( ${nr_running} + ${nr_notstarted}))
   
   d=$(date "+%FT%T")
-  echo "${d}: running:$nr_running; finished:$nr_finished; error:$nr_error; notstarted:$nr_notstarted; jobtarget:${TKSLURM_NRJOBS}"
+  echo "${d}: running:$nr_running; stopped:$nr_stopped; finished:$nr_finished; error:$nr_error; notstarted:$nr_notstarted;">&2
 
-  if [ ${nr_running} -lt ${TKSLURM_NRJOBS} -a $nr_notstarted -gt 0 ]
-  then
-    # start only a single job in order to watch ressources
-    a1=$(head -n1 ${TKSLURM_LOGDIR}/tkslurm_cnotstarted)
-    echo "${d}: starting ${a1}"
-    eval ${a1}
-  elif [ ${nr_running} -gt ${TKSLURM_NRJOBS} -a $nr_running -gt 0 ]
-  then
-    # stop
-    a1=$(tail -n1 ${TKSLURM_LOGDIR}/tkslurm_krunning)
-    echo "${d}: requeueing ${a1}"
-    eval ${a1}
-  fi
   #read/change/write tkslurm_init.sh file
-  tkslurm_adjust_nrjobs.sh ${nr_unfinished} ${TKSLURM_DELAY} ${TKSLURM_MAXJOBS}
-  # read the new variables
-  . ${TKSLURM_LOGDIR}/tkslurm_init.sh
+  todo=$(tkslurm_adjust_nrjobs1.sh ${TKSLURM_DELAY} ${TKSLURM_MAXJOBS} ${nr_notstarted} ${nr_running} ${nr_stopped});
+  if [ $todo = "start" ]
+  then
+    a1=$(head -n1 ${TKSLURM_LOGDIR}/tkslurm_cnotstarted)
+    echo "${d}: starting ${a1}">&2
+    eval ${a1}
+  elif [ $todo = "kill" ]
+  then
+    a1=$(head -n1 ${TKSLURM_LOGDIR}/tkslurm_prunningstopped)
+    echo "${d}: kill ${a1}">&2
+    eval pkill --signal SIGCONT -f "${a1}"
+    eval pkill -f "${a1}"
+  elif [ $todo = "sleep" ]
+  then
+    a1=$(head -n1 ${TKSLURM_LOGDIR}/tkslurm_prunning)
+    echo "${d}: sleep ${a1}">&2
+    eval pkill --signal SIGSTOP -f "${a1}"
+  elif [ $todo = "wakeup" ]
+  then
+    a1=$(head -n1 ${TKSLURM_LOGDIR}/tkslurm_pstopped)
+    echo "${d}: wakeup ${a1}">&2
+    eval pkill --signal SIGCONT -f "${a1}"
+  fi;
+
 done
 

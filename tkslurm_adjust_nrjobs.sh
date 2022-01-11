@@ -3,6 +3,8 @@
 nr_unfinished=$1
 delay=$2
 maxjobs=$3
+nrrunning=$4
+# nrstopped=$5
 
 # reads the state file tkslurm_init
 # changes the state
@@ -22,17 +24,23 @@ a3=$(echo $a|cut -f1 -d ' ')
 mc=$(cat /proc/cpuinfo|grep processor|wc -l)
 
 d=$(date "+%FT%T")
-echo "${d}: swap:$a1; waload: $a2; idle: $a3; unfinishedjobs: ${nr_unfinished}; nrcpus: ${mc}"
+lod=$(( ${mc}*(100-${a3})/${nrrunning}))
+# lod is average cpu per running process
+echo "${d}: swap:$a1; waload: $a2; idle: $a3; unfinishedjobs: ${nr_unfinished}; nrcpus: ${mc}; load=${lod}"
 
 . ${TKSLURM_LOGDIR}/tkslurm_init.sh
 if [ $a1 -gt 90 -a ${TKSLURM_NRJOBS} -gt 1 ]
 then
   TKSLURM_NRJOBS=$((${TKSLURM_NRJOBS} - 1))
   echo "${d}: reduce due to swap > 90pct"
-elif [ $a2 -gt 5 -a ${TKSLURM_NRJOBS} -gt 1 ]
+elif [ $a2 -gt 6 -a ${TKSLURM_NRJOBS} -gt 1 ]
 then
   TKSLURM_NRJOBS=$((${TKSLURM_NRJOBS} - 1))
-  echo "${d}: reduce due to io >5 pct"
+  echo "${d}: reduce due to io >6 pct"
+elif [ ${lod} -lt 95 -a ${TKSLURM_NRJOBS} -gt 1 ]
+then
+  TKSLURM_NRJOBS=$((${TKSLURM_NRJOBS} - 1))
+  echo "${d}: reduce due to load per process <95"
 elif [ $a3 -lt 5 -a ${TKSLURM_NRJOBS} -gt 1 ]
 then
   TKSLURM_NRJOBS=$((${TKSLURM_NRJOBS} - 1))

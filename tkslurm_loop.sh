@@ -22,7 +22,7 @@ echo "export TKSLURM_NRJOBS=${TKSLURM_NRJOBS};export TKSLURM_DELAY=${TKSLURM_DEL
 
 while true
 do
-  tkslurm_update_queue1.sh
+  tkslurm_update_queue.sh
   # process queue files
   # requires TKSLURM_LOGDIR
  
@@ -38,7 +38,7 @@ do
   echo "${d}: running:$nr_running; stopped:$nr_stopped; finished:$nr_finished; error:$nr_error; notstarted:$nr_notstarted;">&2
 
   #read/change/write tkslurm_init.sh file
-  todo=$(tkslurm_adjust_nrjobs1.sh ${TKSLURM_DELAY} ${TKSLURM_MAXJOBS} ${nr_notstarted} ${nr_running} ${nr_stopped});
+  todo=$(tkslurm_adjust_nrjobs.sh ${TKSLURM_DELAY} ${TKSLURM_MAXJOBS} ${nr_notstarted} ${nr_running} ${nr_stopped});
   if [ $todo = "start" ]
   then
     a1=$(head -n1 ${TKSLURM_LOGDIR}/tkslurm_cnotstarted)

@@ -74,6 +74,6 @@ echo $b2>>/tmp/tkslurm_pqueue
 echo $b3>>/tmp/tkslurm_fqueue
 echo $b4>>/tmp/tkslurm_equeue
 done
-./tkslurm_loop1.sh
+./tkslurm_loop.sh
 
 The output is:

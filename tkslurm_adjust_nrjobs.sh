@@ -1,57 +1,73 @@
 #!/bin/zsh
 
-nr_unfinished=$1
-delay=$2
-maxjobs=$3
-nrrunning=$4
-# nrstopped=$5
+delay=$1
+maxjobs=$2
+nr_notstarted=$3
+nr_running=$4
+nr_stopped=$5
+
 
 # reads the state file tkslurm_init
 # changes the state
 # writes the state file
 
 a=$(tkslurm_cpuinfo.sh ${delay})
-# nice iowait swap
+# idle iowait swap
 
-# a1 = free swap in percent
-a1=$(echo $a|cut -f3 -d ' ')
+# a1 = full swap in percent
+fullswap=$(echo $a|cut -f3 -d ' ')
 # a2 = wa-load in percent
-a2=$(echo $a|cut -f2 -d ' ')
+iowait=$(echo $a|cut -f2 -d ' ')
 # a3 = idle in percent
-a3=$(echo $a|cut -f1 -d ' ')
+idle=$(echo $a|cut -f1 -d ' ')
 
 # number cpus is maximum for nrjobs
 mc=$(cat /proc/cpuinfo|grep processor|wc -l)
 
 d=$(date "+%FT%T")
-lod=$(( ${mc}*(100-${a3})/${nrrunning}))
+if [ ${nr_running} -eq 0 ] ;then
+  efficiency=100
+else
+  efficiency=$(( ${mc}*(100-${idle})/${nr_running}))
+fi
 # lod is average cpu per running process
-echo "${d}: swap:$a1; waload: $a2; idle: $a3; unfinishedjobs: ${nr_unfinished}; nrcpus: ${mc}; load=${lod}"
+echo "${d}: swap:$fullswap; wait: $iowait; \
+idle: $idle; efficiency=$efficiency; \
+nr_notstarted: ${nr_notstarted}; \
+nr_running: ${nr_running}; \
+nr_stopped: ${nr_stopped};">&2
+
+nr_runningorstopped=$((${nr_running}+${nr_stopped}))
+
+# gegeben:
+# efficiency - cpuload/processes
+# fullswap - fullswap/swap
+# iowait - iowait percent
+# idle - idle percent
 
 . ${TKSLURM_LOGDIR}/tkslurm_init.sh
-if [ $a1 -gt 90 -a ${TKSLURM_NRJOBS} -gt 1 ]
-then
-  TKSLURM_NRJOBS=$((${TKSLURM_NRJOBS} - 1))
-  echo "${d}: reduce due to swap > 90pct"
-elif [ $a2 -gt 6 -a ${TKSLURM_NRJOBS} -gt 1 ]
-then
-  TKSLURM_NRJOBS=$((${TKSLURM_NRJOBS} - 1))
-  echo "${d}: reduce due to io >6 pct"
-elif [ ${lod} -lt 95 -a ${TKSLURM_NRJOBS} -gt 1 ]
-then
-  TKSLURM_NRJOBS=$((${TKSLURM_NRJOBS} - 1))
-  echo "${d}: reduce due to load per process <95"
-elif [ $a3 -lt 5 -a ${TKSLURM_NRJOBS} -gt 1 ]
-then
-  TKSLURM_NRJOBS=$((${TKSLURM_NRJOBS} - 1))
-  echo "${d}: reduce due to idle < 5pct"
-elif [ $a3 -gt 30 -a $a1 -lt 50 -a $a2 -le 0 -a ${TKSLURM_NRJOBS} -lt ${nr_unfinished} -a ${TKSLURM_NRJOBS} -lt $mc -a ${TKSLURM_NRJOBS} -lt ${maxjobs} ]
-then
-  TKSLURM_NRJOBS=$((${TKSLURM_NRJOBS} + 1))
-  echo "${d}: increase due to idle>30pct and swap<50pct and io<=0pct"
-fi
 
-echo "export TKSLURM_NRJOBS=${TKSLURM_NRJOBS};export TKSLURM_DELAY=${TKSLURM_DELAY};">${TKSLURM_LOGDIR}/tkslurm_init.sh
+if [ \( $efficiency -lt 95 -o $iowait -gt 6 -o $idle -lt 5 \) -a ${nr_running} -gt 0 ]
+then
+  # sleep
+  echo "sleep"
+elif [ $fullswap -gt 90 -a ${nr_runningorstopped} -gt 0 ]
+then
+  # kill
+  echo "kill"
+elif [ $idle -gt 30 -a $iowait -le 0 -a ${nr_stopped} -gt 0 ]
+then
+  # wakeup
+  echo "wakeup"
+elif [ $idle -gt 30 -a $fullswap -lt 50 -a $iowait -le 0 \
+ -a ${nr_stopped} -le 0 -a ${nr_notstarted} -gt 0 \
+ -a ${nr_runningorstopped} -lt ${maxjobs} ]
+then
+  # start
+  echo "start"
+else
+  echo "donothing"
+fi
 
 
 

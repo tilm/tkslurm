@@ -42,24 +42,24 @@ do
   if [ $todo = "start" ]
   then
     a1=$(head -n1 ${TKSLURM_LOGDIR}/tkslurm_cnotstarted)
-    echo "${d}: starting ${a1}">&2
+    echo "${d}: *** starting ${a1}">&2
     eval ${a1}
   elif [ $todo = "kill" ]
   then
-    a1=$(head -n1 ${TKSLURM_LOGDIR}/tkslurm_prunningstopped)
-    echo "${d}: kill ${a1}">&2
-    eval pkill --signal SIGCONT -f "${a1}"
-    eval pkill -f "${a1}"
+    a1=$(tail -n1 ${TKSLURM_LOGDIR}/tkslurm_prunningstopped)
+    echo "${d}: ### kill ${a1}">&2
+    pkill --signal SIGCONT -f "${a1}"
+    pkill -f "${a1}"
   elif [ $todo = "sleep" ]
   then
-    a1=$(head -n1 ${TKSLURM_LOGDIR}/tkslurm_prunning)
-    echo "${d}: sleep ${a1}">&2
-    eval pkill --signal SIGSTOP -f "${a1}"
+    a1=$(tail -n1 ${TKSLURM_LOGDIR}/tkslurm_prunning)
+    echo "${d}: ### sleep ${a1}">&2
+    pkill --signal SIGSTOP -f "${a1}"
   elif [ $todo = "wakeup" ]
   then
     a1=$(head -n1 ${TKSLURM_LOGDIR}/tkslurm_pstopped)
-    echo "${d}: wakeup ${a1}">&2
-    eval pkill --signal SIGCONT -f "${a1}"
+    echo "${d}: *** wakeup ${a1}">&2
+    pkill --signal SIGCONT -f "${a1}"
   fi;
 
 done

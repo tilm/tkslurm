@@ -2,9 +2,11 @@ tkslurm - dynamic micro workload manager in shell
 
 You have some commands to evaluate and
 dont know how much ressources it costs. 
-The loop shell script starts and stops
-the proper number of processes according
-to the available ressources.
+The loop shell script starts jobs
+successively, monitors ressource consumption,
+and stops/kills jobs under some conditions,
+in order to reach a proper number of running
+processes according to the available ressources.
 
 Necessary initial environment:
 export TKSLURM_MAXJOBS=24
@@ -27,6 +29,8 @@ Advantage wrt slurm:
 No knowledge of memory/cpu/io consumption necessary.
 No knowledge of hardware ressources necessary.
 Running on a dedicated machine not necessary.
+Not stateful, all config files are evaluated once
+per cycle.
 Jobs are startet one by one with a user defined delay
 in order to smooth io requests and allows for checking
 the new cpu/mnemory/io load.
@@ -45,8 +49,9 @@ Limitations:
 You are responsible that the commands work,
 if a job terminates with an indefinite state,
 it will be restarted again and again.
-For small processlists, because every jobs state
-will queried every cycle.
+Only feasible for small processlists,
+because every jobs state
+will queried once a cycle.
 There is a single queue, no priority queue,
 user has to reorder queue files if necessary.
 No explicit support for running on a cluster,
@@ -76,4 +81,4 @@ echo $b4>>/tmp/tkslurm_equeue
 done
 ./tkslurm_loop.sh
 
-The output is:
+

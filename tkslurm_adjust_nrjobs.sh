@@ -47,19 +47,19 @@ nr_runningorstopped=$((${nr_running}+${nr_stopped}))
 
 . ${TKSLURM_LOGDIR}/tkslurm_init.sh
 
-if [ \( $efficiency -lt 95 -o $iowait -gt 6 -o $idle -lt 5 \) -a ${nr_running} -gt 0 ]
+if [ \( $fullswap -gt 100 -o $idle -lt 5 -o $iowait -ge 1 -o $efficiency -lt 95 \) -a ${nr_running} -gt 0 ]
 then
   # sleep
   echo "sleep"
-elif [ $fullswap -gt 90 -a ${nr_runningorstopped} -gt 0 ]
+elif [ $fullswap -gt 60                                  -a ${nr_runningorstopped} -gt 0 ]
 then
   # kill
   echo "kill"
-elif [ $idle -gt 30 -a $iowait -le 0 -a ${nr_stopped} -gt 0 ]
+elif [ $fullswap -lt 100 -a $idle -gt 20 -a $iowait -le 0 -a ${nr_stopped} -gt 0 ]
 then
   # wakeup
   echo "wakeup"
-elif [ $idle -gt 30 -a $fullswap -lt 50 -a $iowait -le 0 \
+elif [ $idle -gt 20 -a $fullswap -lt 20 -a $iowait -le 0 \
  -a ${nr_stopped} -le 0 -a ${nr_notstarted} -gt 0 \
  -a ${nr_runningorstopped} -lt ${maxjobs} ]
 then

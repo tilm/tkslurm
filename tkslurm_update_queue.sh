@@ -5,6 +5,11 @@ then
   echo "export TKSLURM_LOGDIR=foo is missing"
 fi
 
+# todo
+# 1. ps -o pid,state,command called multiple times, inefficient
+# 2. dont grep large files periodically
+
+
 # find out which processes are running
 truncate -s 0 ${TKSLURM_LOGDIR}/tkslurm_crunning
 truncate -s 0 ${TKSLURM_LOGDIR}/tkslurm_prunning

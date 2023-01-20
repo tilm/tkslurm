@@ -1,7 +1,8 @@
 #!/bin/zsh
 
 
-CFILE=$HOME/.tkslurm.conf
+HDIR=$(dirname $(readlink -f $0))
+CFILE=$HDIR/tkslurm.conf
 
 CFG=()
 
@@ -61,9 +62,6 @@ then
   return
 fi
 
-
-# write state file tkslurm_init.sh
-# echo "export TKSLURM_NRJOBS=${TKSLURM_NRJOBS};export TKSLURM_DELAY=${TKSLURM_DELAY};">${TKSLURM_LOGDIR}/tkslurm_init.sh
 
 while true
 do

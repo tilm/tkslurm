@@ -8,7 +8,11 @@ and stops/kills jobs under some conditions,
 in order to reach a proper number of running
 processes according to the available ressources.
 
-There is a config file .tkslurm.conf.
+There is a config file tkslurm.conf,
+which is editable via editor and commands like
+./tkslurm_loop.sh --set TKSLURM_LOGDIR=/tmp
+and it will be evaluated every loop in realtime.
+
 
 Job definition files:
 4 files must provide the same number of rows,
@@ -57,9 +61,6 @@ and ssh pgrep calls in rqueue and kqueue.
 
 example for job file creation with the base command "sleep":
 
-export TKSLURM_MAXJOBS=4
-export TKSLURM_DELAY=2
-export TKSLURM_LOGDIR=/tmp
 truncate -s0 /tmp/tkslurm_cqueue
 truncate -s0 /tmp/tkslurm_pqueue
 truncate -s0 /tmp/tkslurm_fqueue

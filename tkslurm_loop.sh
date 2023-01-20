@@ -1,5 +1,51 @@
 #!/bin/zsh
 
+
+CFILE=$HOME/.tkslurm.conf
+
+CFG=()
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -s|--set)
+      shift # past argument
+      CFG+=("$1")
+      shift # past value
+      ;;
+    -*|--*)
+      echo "Unknown option $1"
+      exit 1
+      ;;
+    *)
+      echo "Unknown option $1"
+      exit 1
+     ;;
+  esac
+done
+
+
+if [ ${#CFG[@]} != 0 ];
+then
+  CFILE1=$(mktemp)
+  echo ${CFG[@]}|tr ' ' '\n'|while read a;
+  do
+    a1=$(echo $a|cut -f1 -d'=')
+    a2=$(echo $a|cut -f2 -d'=')
+    if grep -q "^${a1}=" ${CFILE} ;
+    then
+      sed 's@^'${a1}'=.*@'${a1}'='${a2}'@' ${CFILE} >${CFILE1}
+    else
+      cat ${CFILE} <(echo -e "${a1}=${a2}") >${CFILE1}
+    fi
+    mv -f ${CFILE1} ${CFILE}
+  done;
+  exit;
+fi;
+
+CFILE1=$(sed "s/^\(.*\)=\(.*\)$/export \1=\2/" ${CFILE})
+cat ${CFILE}
+echo ${CFILE1}
+
 if [ -z ${TKSLURM_LOGDIR} ]
 then
   echo "export TKSLURM_LOGDIR=foo is missing"
@@ -17,11 +63,13 @@ fi
 
 
 # write state file tkslurm_init.sh
-echo "export TKSLURM_NRJOBS=${TKSLURM_NRJOBS};export TKSLURM_DELAY=${TKSLURM_DELAY};">${TKSLURM_LOGDIR}/tkslurm_init.sh
-
+# echo "export TKSLURM_NRJOBS=${TKSLURM_NRJOBS};export TKSLURM_DELAY=${TKSLURM_DELAY};">${TKSLURM_LOGDIR}/tkslurm_init.sh
 
 while true
 do
+. ${CFILE}
+. <(echo "${CFILE1}")
+
   tkslurm_update_queue.sh
   # process queue files
   # requires TKSLURM_LOGDIR
@@ -37,8 +85,7 @@ do
   d=$(date "+%FT%T")
   echo "${d}: running:$nr_running; stopped:$nr_stopped; finished:$nr_finished; error:$nr_error; notstarted:$nr_notstarted;">&2
 
-  #read/change/write tkslurm_init.sh file
-  todo=$(tkslurm_adjust_nrjobs.sh ${TKSLURM_DELAY} ${TKSLURM_MAXJOBS} ${nr_notstarted} ${nr_running} ${nr_stopped});
+  todo=$(tkslurm_adjust_nrjobs.sh ${nr_notstarted} ${nr_running} ${nr_stopped});
   if [ $todo = "start" ]
   then
     a1=$(head -n1 ${TKSLURM_LOGDIR}/tkslurm_cnotstarted)

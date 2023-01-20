@@ -1,17 +1,21 @@
 #!/bin/zsh
 
-delay=$1
-maxjobs=$2
-nr_notstarted=$3
-nr_running=$4
-nr_stopped=$5
+nr_notstarted=$1
+nr_running=$2
+nr_stopped=$3
+
+if [ -z ${TKSLURM_LOGDIR} ]
+then
+  echo "export TKSLURM_LOGDIR=foo is missing"
+fi
+
 
 
 # reads the state file tkslurm_init
 # changes the state
 # writes the state file
 
-a=$(tkslurm_cpuinfo.sh ${delay})
+a=$(tkslurm_cpuinfo.sh)
 # idle iowait swap
 
 # a1 = full swap in percent
@@ -45,32 +49,40 @@ nr_runningorstopped=$((${nr_running}+${nr_stopped}))
 # iowait - iowait percent
 # idle - idle percent
 
-. ${TKSLURM_LOGDIR}/tkslurm_init.sh
+# . ${TKSLURM_LOGDIR}/tkslurm_init.sh
 
-if [ \( $fullswap -gt 100 -o $idle -lt 5 -o $iowait -ge 1 -o $efficiency -lt 95 \) -a ${nr_running} -gt 0 ]
+if [ \( $fullswap -gt 100 \
+  -o $idle -lt $TKSLURM_IDLE_SLEEP_LT \
+  -o $iowait -ge $TKSLURM_IOWAIT_SLEEP_GE \
+  -o $efficiency -lt $TKSLURM_EFF_SLEEP_LT \) \
+  -a ${nr_running} -gt 0 ]
 then
   # sleep
   echo "sleep"
-elif [ $fullswap -gt 60                                  -a ${nr_runningorstopped} -gt 0 ]
+elif [ $fullswap -gt $TKSLURM_SWAP_KILL_GT \
+  -a ${nr_runningorstopped} -gt 0 ]
 then
   # kill
   echo "kill"
-elif [ $fullswap -lt 100 -a $idle -gt 20 -a $iowait -le 0 -a ${nr_stopped} -gt 0 ]
+elif [ $fullswap -lt 100 \
+  -a $idle -gt $TKSLURM_IDLE_WAKEUP_GT \
+  -a $iowait -le $TKSLURM_IOWAIT_WAKEUP_LE \
+  -a ${nr_stopped} -gt 0 ]
 then
   # wakeup
   echo "wakeup"
-elif [ $idle -gt 20 -a $fullswap -lt 20 -a $iowait -le 0 \
- -a ${nr_stopped} -le 0 -a ${nr_notstarted} -gt 0 \
- -a ${nr_runningorstopped} -lt ${maxjobs} ]
+elif [ $idle -gt $TKSLURM_IDLE_START_GT \
+ -a $fullswap -lt $TKSLURM_SWAP_START_LT \
+ -a $iowait -le $TKSLURM_IOWAIT_START_LE \
+ -a ${nr_stopped} -le 0 \
+ -a ${nr_notstarted} -gt 0 \
+ -a ${nr_runningorstopped} -lt ${TKSLURM_MAXJOBS} ]
 then
   # start
   echo "start"
 else
   echo "donothing"
 fi
-
-
-
 
 
 

@@ -8,10 +8,7 @@ and stops/kills jobs under some conditions,
 in order to reach a proper number of running
 processes according to the available ressources.
 
-Necessary initial environment:
-export TKSLURM_MAXJOBS=24
-export TKSLURM_DELAY=2
-export TKSLURM_LOGDIR=/tmp
+There is a config file .tkslurm.conf.
 
 Job definition files:
 4 files must provide the same number of rows,
@@ -80,5 +77,11 @@ echo $b3>>/tmp/tkslurm_fqueue
 echo $b4>>/tmp/tkslurm_equeue
 done
 ./tkslurm_loop.sh
+
+
+TODO:
+include setsid command
+assist with job file creation for standard case
+
 
 

@@ -46,7 +46,7 @@ nr_runningorstopped=$((${nr_running}+${nr_stopped}))
 # gegeben:
 # efficiency - cpuload/processes
 # fullswap - fullswap/swap
-# iowait - iowait percent
+# iowait - iowait percent *10
 # idle - idle percent
 
 # . ${TKSLURM_LOGDIR}/tkslurm_init.sh

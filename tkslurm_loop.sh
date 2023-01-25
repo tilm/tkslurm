@@ -47,28 +47,15 @@ CFILE1=$(sed "s/^\(.*\)=\(.*\)$/export \1=\2/" ${CFILE})
 cat ${CFILE}
 echo ${CFILE1}
 
-if [ -z ${TKSLURM_LOGDIR} ]
-then
-  echo "export TKSLURM_LOGDIR=foo is missing"
-fi
-if [ ! ${TKSLURM_DELAY} ]
-then
-  echo "export TKSLURM_DELAY=300 is missing"
-  return
-fi
-if [ ! ${TKSLURM_MAXJOBS} ]
-then
-  echo "export TKSLURM_MAXJOBS=16 is missing"
-  return
-fi
-
-
 while true
 do
+  CFILE1=$(sed "s/^\(.*\)=\(.*\)$/export \1=\2/" ${CFILE})
 . ${CFILE}
 . <(echo "${CFILE1}")
 
+  echo "evaluate queue"
   tkslurm_update_queue.sh
+  echo "evaluate queue ready"
   # process queue files
   # requires TKSLURM_LOGDIR
  
